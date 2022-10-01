@@ -6,10 +6,10 @@ I hope it helps somebody else!
 
 ## Important files:
 
-ClientApp/src/app/cookie-dialog
-ClientApp/src/app/footer
-ClientApp/src/app/app.module.ts
-ClientApp/src/app/google-analaytics.service.ts
-ClientApp/src/app/shared.service.ts
-ClientApp/src/index.html
-ClientApp/src/polyfills.ts
+- ClientApp/src/app/cookie-dialog
+- ClientApp/src/app/footer
+- ClientApp/src/app/app.module.ts
+- ClientApp/src/app/google-analaytics.service.ts
+- ClientApp/src/app/shared.service.ts
+- ClientApp/src/index.html
+- ClientApp/src/polyfills.ts
