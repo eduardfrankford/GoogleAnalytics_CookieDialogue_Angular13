@@ -1,0 +1,4 @@
+.transparent {
+  background-color: rgba(var(--bs-dark-rgb),0.7);
+
+}

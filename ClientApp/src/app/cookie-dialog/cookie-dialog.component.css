@@ -1,0 +1,35 @@
+body {
+  background: #BCBCCC;
+}
+
+.card {
+  width: 400px;
+  flex-direction: column;
+  min-width: 0;
+  color: #fff;
+  word-wrap: break-word;
+  background-color: #000;
+  background-clip: border-box;
+  border: 1px solid #000;
+  border-radius: 6px;
+  -webkit-box-shadow: 0px 0px 5px 0px rgb(249, 249, 250);
+  -moz-box-shadow: 0px 0px 5px 0px rgba(212, 182, 212, 1);
+  box-shadow: 0px 0px 5px 0px rgb(161, 163, 164);
+}
+
+.cookie a {
+  text-decoration: none;
+  color: #000;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.cookie a {
+  text-decoration: none;
+  color: #fff;
+  margin-top: 8px;
+}
+
+.decline {
+  cursor: pointer;
+}

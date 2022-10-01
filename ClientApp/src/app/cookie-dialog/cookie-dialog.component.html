@@ -1,0 +1,24 @@
+
+
+<div class="container">
+  <div >
+    <ngb-toast class="fixed-bottom w-100 bg-dark text-white" *ngIf="!this.closePopup" [autohide]="false" (hidden)="deny()">
+      <div class="text-start p-4 d-flex flex-column">
+        <h4 class="veryLargeText">Cookies</h4>
+        <p class="smallerText text-start">
+          Wir verwenden Cookies, um Ihnen ein optimales Webseiten-Erlebnis zu bieten. Durch die weitere Nutzung der Webseite stimmen Sie der Verwendung von Cookies zu.
+          Sie können mehr über die von uns verwendeten Cookies hier erfahren: <a href="/datenschutz">Datenschutzerklärung</a>
+        </p>
+        <div class="text-end">
+          <button type="button" (click)="deny()" class="btn btn-outline-light mr-3 mx-2 smallerText" id="btnDeny">
+              Ablehnen
+          </button>
+          <button type="button" (click)="accept()" class="btn btn-light mx-2 smallerText" id="btnAccept">
+              Akzeptieren
+          </button>
+      </div>
+      </div>
+    </ngb-toast>
+  </div>
+
+</div>
