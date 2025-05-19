@@ -1,7 +1,7 @@
-# Google Analytics Cookie Dialog for Angular13
-Google Analytics Cookie Dialog for Angular 13
+# Google Analytics Cookie Dialog for Angular17
+Google Analytics Cookie Dialog for Angular 17
 
-I implemented a cookie dialogue working with Google Analytics and other Cookies for my Angular 13 project with .net6.0, because I could not find a proper solution anywhere else.
+I implemented a cookie dialogue working with Google Analytics and other Cookies for my Angular 17 project with .net6.0, because I could not find a proper solution anywhere else.
 I hope it helps somebody else!
 
 ## How it looks like
@@ -24,5 +24,5 @@ I hope it helps somebody else!
     - ClientApp/src/app/google-analaytics.service.ts -> The Angular implementation for Google Analytics
     - ClientApp/src/app/shared.service.ts -> Here the variable is shared between pages whether the Cookies were accepted or not
     - ClientApp/src/index.html -> Here we include the Google Analytics script
-    - ClientApp/src/polyfills.ts -> import '@angular/localize/init'; // Needed for Angular 13
+    - ClientApp/src/polyfills.ts -> import '@angular/localize/init'; // Needed for Angular 17
 
