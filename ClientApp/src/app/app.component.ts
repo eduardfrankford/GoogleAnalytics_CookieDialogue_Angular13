@@ -7,7 +7,7 @@ declare let gtag: Function;
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  title = "Google Analytics Cookie Dialog for Angular 13";
+  title = "Google Analytics Cookie Dialog for Angular 17";
 
   constructor(private router: Router) {}
 
