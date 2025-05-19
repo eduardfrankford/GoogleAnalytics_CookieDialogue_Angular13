@@ -15,10 +15,14 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
     - name: Install dependencies
-      run: npm ci
+      run: npm install --legacy-peer-deps
       working-directory: ClientApp
+    - name: Install Chrome
+      run: sudo apt-get update && sudo apt-get install -y google-chrome-stable
+    - name: Verify Chrome version
+      run: google-chrome --version
     - name: Run tests
       run: npx ng test --watch=false --browsers=ChromeHeadless --no-progress
       working-directory: ClientApp
