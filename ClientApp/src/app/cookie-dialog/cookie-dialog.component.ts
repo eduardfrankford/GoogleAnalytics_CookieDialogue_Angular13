@@ -1,109 +1,87 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { filter, Subject, takeUntil } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { GoogleAnalyticsService } from '../google-analaytics.service';
 import { SharedService } from '../shared.service';
-import {Title} from "@angular/platform-browser";
 
-declare let gtag: Function;
 
 @Component({
   selector: 'app-cookie-dialog',
   templateUrl: './cookie-dialog.component.html',
-  styleUrls: ['./cookie-dialog.component.css'],
-  providers: [GoogleAnalyticsService]
+  styleUrls: ['./cookie-dialog.component.css']
 })
-export class CookieDialogComponent implements OnInit {
+export class CookieDialogComponent implements OnInit, OnDestroy {
+  closePopup = false;
 
-  constructor(private router: Router, private googleAnalyticsService: GoogleAnalyticsService, public sharedService: SharedService, private titleService:Title) { }
-  public closePopup = false;
+  private readonly storageKey = 'cookies_consented';
+  private readonly cookieDomain = environment.cookieDomain;
+  private readonly gaCookieNames = environment.analytics.cookieNames;
+  private readonly destroy$ = new Subject<void>();
 
+  constructor(
+    private router: Router,
+    private ga: GoogleAnalyticsService,
+    public shared: SharedService,
+    private title: Title
+  ) {}
 
-  ngOnInit() {
-    if (this.getConsent()) {
+  /* ---------- lifecycle ---------- */
 
-      this.accept();
-    }
-    else {
-      //delete all cookies from this page
-      this.deny();
-      this.sharedService.acceptedConsent = false;
-      this.closePopup = false;
-    }
+  ngOnInit(): void {
+    this.getConsent() ? this.handleAccept(false) : this.handleDeny(false);
   }
 
-  public showCookieDialog() {
-    this.closePopup = false;
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
+  /* ---------- UI bindings ---------- */
 
-  public loadScript() {
-    let body = <HTMLDivElement>document.body;
-    let script = document.createElement('script');
-    script.innerHTML = '';
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-ZZ7HCE7DX4';
-    script.async = true;
-    script.defer = true;
-    body.appendChild(script);
-  }
+  showCookieDialog(): void { this.closePopup = false; }
+  deny(): void  { this.handleDeny(true); }
+  accept(): void { this.handleAccept(true); }
 
-  public deny(): void {
-    this.sharedService.acceptedConsent = false;
-    this.deleteCookie("_ga");
-    this.deleteCookie("_ga_ZZ7HCE7DX4");
-    this.setConsent(false);
+  /* ---------- consent logic ---------- */
+
+  private handleDeny(updateStore = true): void {
+    this.shared.acceptedConsent = false;
+    this.gaCookieNames.forEach(c => this.setCookie(c, '', -1));
+    if (updateStore) this.setConsent(false);
     this.closePopup = true;
   }
 
-  public accept(): void {
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        if (typeof gtag !== 'undefined') {
-          gtag('config', 'G-ZZ7HCE7DX4', {
-            page_title: event.urlAfterRedirects,
-            page_location: event.urlAfterRedirects,
-            page_path: event.urlAfterRedirects,
-          });
-        }
-      }
-    });
-    this.loadScript();
-    this.googleAnalyticsService.eventEmitter(this.titleService.getTitle(), window.location.href, "Visit", 'Visit', 1);
-    this.sharedService.acceptedConsent = true;
-    this.setConsent(true);
+  private handleAccept(updateStore = true): void {
+    this.shared.acceptedConsent = true;
+    this.ga.load();
+
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(e =>
+        this.ga.pageView(e.urlAfterRedirects, this.title.getTitle())
+      );
+
+    if (updateStore) this.setConsent(true);
     this.closePopup = true;
   }
 
-  public contactFormUsed() {
-    if(this.getConsent()) {
-      this.googleAnalyticsService.eventEmitter('Contact', 'Contact', "Contact", 'Contact', 1);}
+  /* ---------- helpers ---------- */
+
+  private getConsent(): boolean {
+    return localStorage.getItem(this.storageKey) === 'true';
   }
 
-  public getConsent(): boolean {
-
-    return localStorage.getItem('cookies_consented') === 'true';
-
+  private setConsent(val: boolean): void {
+    localStorage.setItem(this.storageKey, val ? 'true' : 'false');
   }
 
-  public setConsent(value: boolean): void {
-    localStorage.setItem('cookies_consented', value ? 'true' : 'false');
+  private setCookie(name: string, value: string, days: number, path = '/'): void {
+    const date = new Date(Date.now() + days * 86_400_000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${date}; path=${path}; domain=${this.cookieDomain}`;
   }
-
-  private deleteCookie(name: string) {
-    this.setCookie(name, '', -1);
-  }
-
-  private setCookie(name: string, value: string, expireDays: number, path: string = '/') {
-    let d: Date = new Date();
-    d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
-    let expires: string = `expires=${d.toUTCString()}`;
-    let domain : string = "localhost";
-    if(window.location.hostname != "localhost")
-        {
-          domain = ".frankford-it.at";
-        }
-
-    let cpath: string = path ? `; path=${path}; domain=${domain}` : '';
-    document.cookie = `${name}=${value}; ${expires}${cpath}`;
-  }
-
 }
